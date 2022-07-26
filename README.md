@@ -22,4 +22,26 @@ The problem does not specify what units to convert between. So below I will list
 - Temperature conversions: Celsius, Fahrenheit, Kelvin
 
 ## Solution
+In order to perform the conversions, first we needs a few bits of data: we need the quantity the user is entering, the unit the quantitiy is in, and then the unit the user wants the quantity converted into. This is simple as we can just ask the user for this information. After that, we must convert the quantity into the new unit. For metric units, I think the easiest way would be to store the units in an array where the conversion is `quantity * 10^index+1` or `quantity / 10^index+1`.
+```
+quantity = INPUT
+quantity_units = INPUT
 
+metric_mass = ["Tonne", "Kilogram", "Gram", "Milligram", "Microgram"]
+
+new_units = INPUT
+
+x = INDEX OF quantity_units IN metric_mass
+y = INDEX OF new_units IN metric_mass
+value = 0
+
+IF x < y THEN
+    value = quantity / 10^metric_mass[y]+1
+ELSE IF x > y THEN
+    value = quantity * 10^metric_mass[y]+1
+ELSE
+    value = quantity
+```
+
+OUTPUT value
+```
