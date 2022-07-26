@@ -36,12 +36,31 @@ y = INDEX OF new_units IN metric_mass
 value = 0
 
 IF x < y THEN
-    value = quantity / 10^metric_mass[y]+1
-ELSE IF x > y THEN
     value = quantity * 10^metric_mass[y]+1
+ELSE IF x > y THEN
+    value = quantity / 10^metric_mass[y]+1
 ELSE
     value = quantity
-```
 
 OUTPUT value
+```
+We can "run" this pesudocode by simply assigning values to variables and then going thorugh the logic either in our head or on paper. Below we assign the variables values.
+```
+quantity = 100
+quantity_units = "Kilogram"
+new_units = "Gram"
+```
+We tell the program we want to convert 100 Kg to grams. The program will then get the index of the units entered in `metric_mass`. 
+```
+x = 1  # Remember arrays start at 0, so Kilogram in metric_mass is at index 1
+y = 2  # Gram in metric_mass is at index 2
+```
+We then check if `x` is smaller than `y`, it is, and then run the following calculation. I've shown how the calculation is evaluated so it's easier to understand where we are getting some of our values from.
+```
+value = quantity * 10^metric_mass[y]+1
+value = 100 * 10^metric_mass[y]+1
+value = 100 * 10^2+1
+value = 100 * 10^3
+value = 100 * 1000
+value = 100000
 ```
