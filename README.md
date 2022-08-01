@@ -13,7 +13,8 @@ In this code challenge, we write a program that converts between different units
 ## Problem
 Converts various units between one another. The user enters the type of unit being entered, the type of unit they want to convert to and then the value. The program will then make the conversion
 
-The problem does not specify what units to convert between. So below I will list the units the program in this repostiory will cover. Do not feel as if you have to complete all of these conversions, only choose the ones you feel confortable with first, after completing some of the easier ones try a hard one!
+The problem does not specify what units to convert between. So below is a list of all the units you can do. Do not feel as if you have to complete all of these conversions, only choose the ones you feel comfortable with first.
+In our solution, we will only be tackling the Metric Mass conversion as it's the easiest to explain.
 - Time conversions: Centuries, Decades, Years, Months, Weeks, Days, Hours, Minutes, Seconds, Milliseconds
 - Imperial Liquid conversions: Gallon, Quart, Pint, Cup, Ounce, Tablespoon, Teaspoon
 - Imperial Mass conversions: Ton, Stone, Pound, Ounce
@@ -22,45 +23,59 @@ The problem does not specify what units to convert between. So below I will list
 - Temperature conversions: Celsius, Fahrenheit, Kelvin
 
 ## Solution
-In order to perform the conversions, first we needs a few bits of data: we need the quantity the user is entering, the unit the quantitiy is in, and then the unit the user wants the quantity converted into. This is simple as we can just ask the user for this information. After that, we must convert the quantity into the new unit. For metric units, I think the easiest way would be to store the units in an array where the conversion is `quantity * 10^index+1` or `quantity / 10^index+1`.
+In order to perform the conversions, first we need a few bits of data: we need the quantity the user is entering, the unit the quantity is in, and then the unit the user wants the quantity converted into. 
+This is simple as we can just ask the user for this information. After that, we must convert the quantity into the new unit.
+
+For metric mass, to convert up and down we simply divide or multiply by 1000.
+So, given our units are micrograms, milligrams, grams, kilograms, and tonnes.
+To convert gram to kilograms we divide by 1000.
+To convert grams to milligrams we multiply by 1000.
+For each unit we want to convert "up" we divide by 1000, and for each unit we want to convert "down" we multiply by 1000.
+
+This is a consistent pattern we can use to make conversions very easy.
+We find the difference between the user's unit index and the user's convert to unit index, and that's the number of times
+we multiply/divide. In order to know whether to divide or multiply we just need to find which index is bigger.
+
+For example, say the user wants to convert 100 grams to micrograms.
+"gram" is index 2 and "microgram" is index 0. The difference is 2-0=2. 
+We multiply the quantity x1000 twice to get the converted value.
+So, `100 grams x 1000 x 1000 = 100000000 micrograms`.
+
+That's enough explaining let's get on with some code!
+The first part of our code is simple enough, we get the inputs for `quantity` `units` and `new_units` (the units we'll be converting to).
+We also define `metric_mass` which is a list of all the units our program can convert between.
 ```
 quantity = INPUT
-quantity_units = INPUT
+units = INPUT
 
-metric_mass = ["Tonne", "Kilogram", "Gram", "Milligram", "Microgram"]
+metric_mass = ["microgram", "milligram", "gram", "kilogram", "tonne"]
 
 new_units = INPUT
+```
 
-x = INDEX OF quantity_units IN metric_mass
-y = INDEX OF new_units IN metric_mass
-value = 0
+Next, we get the index of `units` and `new_units` in `metric_mass`. We need the index to find the difference.
+Our difference is defined by subtracting `units` from `new_units` or `new_units` from `units` depending on which is bigger.
+We use `MAX` and `MIN` functions most programming languages have to get the biggest and smallest value out of the two.
+```
+units_index = INDEX OF units IN metric_mass
+new_units_index = INDEX OF new_units IN metric_mass
+difference = MAX VALUE OF units_index AND new_units_index - MIN VALUE OF units_index AND new_units_index
+```
 
-IF x < y THEN
-    value = quantity * 10^metric_mass[y]+1
-ELSE IF x > y THEN
-    value = quantity / 10^metric_mass[y]+1
-ELSE
-    value = quantity
+Finally, it's time to start converting our quantity!
+We begin by defining a storage place for our converted value called `new_quantity`.
+Next, we loop until the difference is 0 and either divide by 1000 or multiply by 1000 depending on whether `units_index` or `new_units_index` is bigger.
+After each cycle of the loop we subtract 1 from difference otherwise our loop will be infinite!
+At last, once the loop ends, we output our converted value!
+```
+new_quantity = quantity
 
-OUTPUT value
-```
-We can "run" this pesudocode by simply assigning values to variables and then going thorugh the logic either in our head or on paper. Below we assign the variables values.
-```
-quantity = 100
-quantity_units = "Kilogram"
-new_units = "Gram"
-```
-We tell the program we want to convert 100 Kg to grams. The program will then get the index of the units entered in `metric_mass`. 
-```
-x = 1  # Remember arrays start at 0, so Kilogram in metric_mass is at index 1
-y = 2  # Gram in metric_mass is at index 2
-```
-We then check if `x` is smaller than `y`, it is, and then run the following calculation. I've shown how the calculation is evaluated so it's easier to understand where we are getting some of our values from.
-```
-value = quantity * 10^metric_mass[y]+1
-value = 100 * 10^metric_mass[y]+1
-value = 100 * 10^2+1
-value = 100 * 10^3
-value = 100 * 1000
-value = 100000
+LOOP UNLESS difference = 0
+    IF units_index < new_units_index THEN
+        new_quantity = new_quantity / 1000
+    ELSE IF units_index > new_units_index THEN
+        new_quantity = new_quantity * 1000
+    difference = difference - 1
+
+OUTPUT new_quantity
 ```
